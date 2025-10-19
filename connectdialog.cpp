@@ -1,5 +1,6 @@
 #include "connectdialog.h"
 #include "ui_connectdialog.h"
+#include "bitratebox.h"
 
 #include <QCanBus>
 
@@ -17,7 +18,7 @@ ConnectDialog::ConnectDialog(QWidget *parent) : QDialog(parent), ui(new Ui::Conn
     ui->canFdBox->addItem(tr("false"), QVariant(false));
     ui->canFdBox->addItem(tr("true"), QVariant(true));
 
-    //m_ui->dataBitrateBox->setFlexibleDateRateEnabled(true);//191025_need to create class
+    ui->dataBitrateBox->setFlexibleDateRateEnabled(true);
     connect(ui->okButton, &QPushButton::clicked, this, &ConnectDialog::ok);
     connect(ui->cancelButton, &QPushButton::clicked, this, &ConnectDialog::cancel);
     connect(ui->useConfigurationBox, &QCheckBox::clicked, ui->configurationBox, &QGroupBox::setEnabled);
@@ -84,14 +85,12 @@ void ConnectDialog::updateSettings()
 
 
         // process bitrate
-        //191025_TODO
-//        const int bitrate = ui->bitrateBox->bitRate();
-//        if (bitrate > 0)
-//        {
-//            const ConfigurationItem item(QCanBusDevice::BitRateKey, QVariant(bitrate));
-//            m_currentSettings.configurations.append(item);
-//        }
-
+        const int bitrate = ui->bitrateBox->bitRate();
+        if (bitrate > 0)
+        {
+            const ConfigurationItem item(QCanBusDevice::BitRateKey, QVariant(bitrate));
+            m_currentSettings.configurations.append(item);
+        }
 
         // process CAN FD setting
         ConfigurationItem fdItem;
@@ -99,15 +98,13 @@ void ConnectDialog::updateSettings()
         fdItem.second = ui->canFdBox->currentData();
         m_currentSettings.configurations.append(fdItem);
 
-
-//        // process data bitrate
-          //191025_TODO
-//        const int dataBitrate = ui->dataBitrateBox->bitRate();
-//        if (dataBitrate > 0)
-//        {
-//            const ConfigurationItem item(QCanBusDevice::DataBitRateKey, QVariant(dataBitrate));
-//            m_currentSettings.configurations.append(item);
-//        }
+        // process data bitrate
+        const int dataBitrate = ui->dataBitrateBox->bitRate();
+        if (dataBitrate > 0)
+        {
+            const ConfigurationItem item(QCanBusDevice::DataBitRateKey, QVariant(dataBitrate));
+            m_currentSettings.configurations.append(item);
+        }
     }
 }
 

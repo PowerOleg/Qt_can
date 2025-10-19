@@ -38,7 +38,6 @@ private:
     QString configurationValue(QCanBusDevice::ConfigurationKey key);
     void revertSettings();
     void updateSettings();
-        //Ui::ConnectDialog *m_ui = nullptr;//191025
     Settings m_currentSettings;
     QList<QCanBusDeviceInfo> m_interfaces;
 };

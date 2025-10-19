@@ -28,13 +28,15 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     cancontroller.cpp \
-    connectdialog.cpp
+    connectdialog.cpp \
+    bitratebox.cpp
 
 
 HEADERS += \
         mainwindow.h \
     cancontroller.h \
-    connectdialog.h
+    connectdialog.h \
+    bitratebox.h
 
 
 FORMS += \
