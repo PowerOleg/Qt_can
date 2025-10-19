@@ -120,11 +120,11 @@ void ConnectDialog::revertSettings()
     value = configurationValue(QCanBusDevice::ErrorFilterKey);
     ui->errorFilterEdit->setText(value);
     value = configurationValue(QCanBusDevice::BitRateKey);
-    //ui->bitrateBox->setCurrentText(value);//191025_TODO
+    ui->bitrateBox->setCurrentText(value);
     value = configurationValue(QCanBusDevice::CanFdKey);
     ui->canFdBox->setCurrentText(value);
     value = configurationValue(QCanBusDevice::DataBitRateKey);
-    //ui->dataBitrateBox->setCurrentText(value);//191025_TODO
+    ui->dataBitrateBox->setCurrentText(value);
 }
 
 QString ConnectDialog::configurationValue(QCanBusDevice::ConfigurationKey key)
