@@ -29,19 +29,22 @@ SOURCES += \
         mainwindow.cpp \
     cancontroller.cpp \
     connectdialog.cpp \
-    bitratebox.cpp
+    bitratebox.cpp \
+    sendframebox.cpp
 
 
 HEADERS += \
         mainwindow.h \
     cancontroller.h \
     connectdialog.h \
-    bitratebox.h
+    bitratebox.h \
+    sendframebox.h
 
 
 FORMS += \
         mainwindow.ui \
-    connectdialog.ui
+    connectdialog.ui \
+    sendframebox.ui
 
 RESOURCES += \
     resource.qrc
