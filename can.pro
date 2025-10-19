@@ -42,3 +42,6 @@ HEADERS += \
 FORMS += \
         mainwindow.ui \
     connectdialog.ui
+
+RESOURCES += \
+    resource.qrc

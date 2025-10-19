@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_written = new QLabel;
     m_ui->statusBar->addWidget(m_written);//181025_check is it in statusBar?
     initActionsConnections();
-    QTimer::singleShot(50, m_connectDialog, &ConnectDialog::show);
+//    QTimer::singleShot(50, m_connectDialog, &ConnectDialog::show);
 }
 
 MainWindow::~MainWindow()
@@ -28,12 +28,28 @@ MainWindow::~MainWindow()
     delete m_connectDialog;
     delete m_ui;
 }
-//181025_TODO
+
 void MainWindow::initActionsConnections()
 {
+    m_ui->actionDisconnect->setEnabled(false);
 
+    //191025_need to create a class
+    //m_ui->sendFrameBox->setEnabled(false);
+    //connect(m_ui->sendFrameBox, &SendFrameBox::sendFrame, this, &MainWindow::sendFrame);
+    connect(m_ui->actionConnect, &QAction::triggered, m_connectDialog, &ConnectDialog::show);
+    connect(m_connectDialog, &QDialog::accepted, this, &MainWindow::connectDevice);
+    connect(m_ui->actionDisconnect, &QAction::triggered, this, &MainWindow::disconnectDevice);
+
+    //191025_TODO
+//    connect(m_ui->actionQuit, &QAction::triggered, this, &QWidget::close);
+//    connect(m_ui->actionAboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
+//    connect(m_ui->actionClearLog, &QAction::triggered, m_ui->receivedMessagesEdit, &QTextEdit::clear);
+//    connect(m_ui->actionPluginDocumentation, &QAction::triggered, this, []() {
+//    QDesktopServices::openUrl(QUrl("http://doc.qt.io/qt-5/qtcanbus-backends.html#can-bus-plugins"));
+//    });
 }
 
+//191025_TODO
 void MainWindow::processErrors(QCanBusDevice::CanBusError error) const
 {
 
