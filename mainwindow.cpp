@@ -14,10 +14,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     m_ui->setupUi(this);
     m_connectDialog = new ConnectDialog;
-//    m_status = new QLabel;//181025
-//    m_ui->statusBar->addPermanentWidget(m_status);//181025
-//    m_written = new QLabel;//181025
-//    m_ui->statusBar->addWidget(m_written);//181025
+    m_status = new QLabel;
+    m_ui->statusBar->addPermanentWidget(m_status);//181025_check is it in statusBar?
+    m_written = new QLabel;
+    m_ui->statusBar->addWidget(m_written);//181025_check is it in statusBar?
     initActionsConnections();
     QTimer::singleShot(50, m_connectDialog, &ConnectDialog::show);
 }

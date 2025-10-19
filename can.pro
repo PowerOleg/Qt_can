@@ -30,10 +30,13 @@ SOURCES += \
     cancontroller.cpp \
     connectdialog.cpp
 
+
 HEADERS += \
         mainwindow.h \
     cancontroller.h \
     connectdialog.h
 
+
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    connectdialog.ui
