@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QCanBusDevice>
+#include "sendframebox.h"
 
 class ConnectDialog;
 class QCanBusFrame;

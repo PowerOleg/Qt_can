@@ -2,5 +2,7 @@
     <qresource prefix="/">
         <file>images/connect.png</file>
         <file>images/disconnect.png</file>
+        <file>images/clear.png</file>
+        <file>images/exit.png</file>
     </qresource>
 </RCC>
