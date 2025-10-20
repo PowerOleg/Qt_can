@@ -14,6 +14,9 @@
    <string>Dialog</string>
   </property>
   <widget class="QDialogButtonBox" name="buttonBox">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>200</x>
@@ -26,7 +29,7 @@
     <enum>Qt::Horizontal</enum>
    </property>
    <property name="standardButtons">
-    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+    <set>QDialogButtonBox::NoButton</set>
    </property>
   </widget>
   <widget class="QCheckBox" name="useConfigurationBox">
@@ -123,8 +126,8 @@
   <widget class="QComboBox" name="pluginListBox">
    <property name="geometry">
     <rect>
-     <x>250</x>
-     <y>210</y>
+     <x>40</x>
+     <y>40</y>
      <width>86</width>
      <height>25</height>
     </rect>
@@ -159,8 +162,8 @@
   <widget class="QGroupBox" name="specifyInterfaceNameBox">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>30</y>
+     <x>210</x>
+     <y>20</y>
      <width>151</width>
      <height>141</height>
     </rect>
@@ -312,6 +315,19 @@
    </property>
    <property name="text">
     <string>dataBitrateBox</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="pluginListBoxLabel">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>10</y>
+     <width>67</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>plugin</string>
    </property>
   </widget>
  </widget>
