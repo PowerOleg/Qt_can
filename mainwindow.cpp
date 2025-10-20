@@ -32,18 +32,14 @@ MainWindow::~MainWindow()
 void MainWindow::initActionsConnections()
 {
     m_ui->actionDisconnect->setEnabled(false);
-    m_ui->sendFrameBox->setEnabled(false);
-    connect(m_ui->sendFrameBox, &SendFrameBox::sendFrame, this, &MainWindow::sendFrame);
+//    m_ui->sendFrameBox->setEnabled(false);
+//    connect(m_ui->sendFrameBox, &SendFrameBox::sendFrame, this, &MainWindow::sendFrame);
     connect(m_ui->actionConnect, &QAction::triggered, m_connectDialog, &ConnectDialog::show);
     connect(m_connectDialog, &QDialog::accepted, this, &MainWindow::connectDevice);
     connect(m_ui->actionDisconnect, &QAction::triggered, this, &MainWindow::disconnectDevice);
     connect(m_ui->actionQuit, &QAction::triggered, this, &QWidget::close);
     connect(m_ui->actionAboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
     connect(m_ui->actionClearLog, &QAction::triggered, m_ui->receivedMessagesEdit, &QTextEdit::clear);
-//191025_no need
-//    connect(m_ui->actionPluginDocumentation, &QAction::triggered, this, []() {
-//    QDesktopServices::openUrl(QUrl("http://doc.qt.io/qt-5/qtcanbus-backends.html#can-bus-plugins"));
-//    });
 }
 
 
@@ -97,7 +93,7 @@ void MainWindow::connectDevice()
     {
         m_ui->actionConnect->setEnabled(false);
         m_ui->actionDisconnect->setEnabled(true);
-        m_ui->sendFrameBox->setEnabled(true);
+//        m_ui->sendFrameBox->setEnabled(true);
         const QVariant bitRate = m_canDevice->configurationParameter(QCanBusDevice::BitRateKey);
         if (bitRate.isValid())
         {
@@ -121,7 +117,7 @@ void MainWindow::connectDevice()
         }
     }
 }
-//191025_TODO
+
 void MainWindow::disconnectDevice()
 {
     if (!m_canDevice)
@@ -131,7 +127,7 @@ void MainWindow::disconnectDevice()
     m_canDevice = nullptr;
     m_ui->actionConnect->setEnabled(true);
     m_ui->actionDisconnect->setEnabled(false);
-    m_ui->sendFrameBox->setEnabled(false);
+//    m_ui->sendFrameBox->setEnabled(false);
     m_status->setText(tr("Disconnected"));
 }
 
@@ -192,15 +188,15 @@ void MainWindow::processReceivedFrames()
     }
 }
 
-void MainWindow::sendFrame(const QCanBusFrame &frame) const
-{
-    if (!m_canDevice)
-        return;
-    m_canDevice->writeFrame(frame);
+//void MainWindow::sendFrame(const QCanBusFrame &frame) const
+//{
+//    if (!m_canDevice)
+//        return;
+//    m_canDevice->writeFrame(frame);
 
-//    QCanBusFrame::FrameId frameId = ENGINE_MALFUNCTION_FRAME_ID;
-//    QCanBusFrame frame(frameId, data);//QByteArray &data
-//    if (!m_device->writeFrame(frame)) {
-//    qWarning() << "Failed to send frame";
-//    }
-}
+////    QCanBusFrame::FrameId frameId = ENGINE_MALFUNCTION_FRAME_ID;
+////    QCanBusFrame frame(frameId, data);//QByteArray &data
+////    if (!m_device->writeFrame(frame)) {
+////    qWarning() << "Failed to send frame";
+////    }
+//}

@@ -24,7 +24,6 @@ public:
 
 private slots:
     void processReceivedFrames();
-    void sendFrame(const QCanBusFrame &frame) const;
     void processErrors(QCanBusDevice::CanBusError) const;
     void connectDevice();
     void disconnectDevice();
@@ -34,7 +33,6 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
-    //Ui::MainWindow *ui;
     void initActionsConnections();
 
     qint64 m_numberFramesWritten = 0;
