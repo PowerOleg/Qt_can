@@ -42,14 +42,6 @@ void MainWindow::initActionsConnections()
     connect(m_ui->actionClearLog, &QAction::triggered, m_ui->receivedMessagesEdit, &QTextEdit::clear);
 }
 
-void MainWindow::setTemperature(const int temperature)
-{
-
-    m_ui->temperatureEdit->setText(QString::number(temperature, 10).toUpper());
-    m_ui->temperatureSpinBox->setValue(temperature);
-}
-
-
 void MainWindow::processErrors(QCanBusDevice::CanBusError error) const
 {
     switch (error)
@@ -193,6 +185,13 @@ void MainWindow::processReceivedFrames()
         const QString flags = frameFlags(frame);
         m_ui->receivedMessagesEdit->append(time + flags + view);
     }
+}
+
+void MainWindow::setTemperature(const int temperature)
+{
+    int newTemperature = (temperature - 128) < -128 ? -128 : temperature - 128;
+    newTemperature = newTemperature > 127 ? 127 : newTemperature;
+    m_ui->temperatureSpinBox->setValue(newTemperature);//QString::number(temperature, 10).toUpper()
 }
 
 //void MainWindow::sendFrame(const QCanBusFrame &frame) const

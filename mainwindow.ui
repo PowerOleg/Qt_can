@@ -68,6 +68,16 @@
           <item row="1" column="0">
            <widget class="QLineEdit" name="temperatureSensorEdit"/>
           </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="humiditySensorLable">
+            <property name="text">
+             <string>Состояние датчика влажности</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLineEdit" name="humiditySentorEdit"/>
+          </item>
          </layout>
         </widget>
        </item>
@@ -123,6 +133,18 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+            <property name="minimum">
+             <number>-128</number>
+            </property>
+            <property name="maximum">
+             <number>127</number>
+            </property>
+            <property name="value">
+             <number>-128</number>
+            </property>
            </widget>
           </item>
           <item row="2" column="1">
@@ -146,7 +168,14 @@
            </widget>
           </item>
           <item row="4" column="0">
-           <widget class="QSpinBox" name="spinBox"/>
+           <widget class="QSpinBox" name="spinBox">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+           </widget>
           </item>
           <item row="4" column="1">
            <widget class="QLabel" name="percentLabel">
@@ -185,7 +214,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Лог полученных данных</string>
+          <string>Лог полученных кадров</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
