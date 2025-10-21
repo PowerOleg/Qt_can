@@ -42,6 +42,13 @@ void MainWindow::initActionsConnections()
     connect(m_ui->actionClearLog, &QAction::triggered, m_ui->receivedMessagesEdit, &QTextEdit::clear);
 }
 
+void MainWindow::setTemperature(const int temperature)
+{
+
+    m_ui->temperatureEdit->setText(QString::number(temperature, 10).toUpper());
+    m_ui->temperatureSpinBox->setValue(temperature);
+}
+
 
 void MainWindow::processErrors(QCanBusDevice::CanBusError error) const
 {
@@ -167,15 +174,15 @@ void MainWindow::processReceivedFrames()
             view = m_canDevice->interpretErrorFrame(frame);
         else
         {
-//            QCanBusFrame::FrameId frameId = frame.frameId();
-//            QByteArray payload = frame.payload();
+            auto frameId = frame.frameId();//QCanBusFrame::FrameId
+            QByteArray payload = frame.payload();
 //            qDebug() << "ID: " << QString::number(frameId, 16).toUpper()
 //            << " Data: " << payload.toHex().toUpper();
-//            if (frameId == DISTANCE_FRAME_ID && !payload.isEmpty())
-//            {
-//                int distance = static_cast< uint8_t >(payload[0]);
-//                setDistance(distance);
-//            }
+            if (frameId == TEMPERATURE_FRAME_ID && !payload.isEmpty())
+            {
+                int temperature = static_cast< uint8_t >(payload[0]);//qreal
+                setTemperature(temperature);
+            }
 
             view = frame.toString();
         }
