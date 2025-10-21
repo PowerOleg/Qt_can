@@ -28,11 +28,11 @@ public:
 
     Settings settings() const;
 
-    private slots:
-        void pluginChanged(const QString &plugin);
-        void interfaceChanged(const QString &interface);
-        void ok();
-        void cancel();
+private slots:
+    void pluginChanged(const QString &plugin);
+    void interfaceChanged(const QString &interface);
+    void ok();
+    void cancel();
 private:
     Ui::ConnectDialog *ui = nullptr;
     QString configurationValue(QCanBusDevice::ConfigurationKey key);

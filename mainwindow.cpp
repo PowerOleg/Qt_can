@@ -15,9 +15,11 @@ MainWindow::MainWindow(QWidget *parent) :
     m_ui->setupUi(this);
     m_connectDialog = new ConnectDialog;
     m_status = new QLabel;
-    m_ui->statusBar->addPermanentWidget(m_status);//181025_check is it in statusBar?
+    m_ui->statusBar->addPermanentWidget(m_status);
     m_written = new QLabel;
-    m_ui->statusBar->addWidget(m_written);//181025_check is it in statusBar?
+    m_status->setText("Please set connection");
+    m_ui->statusBar->addWidget(m_written);
+    m_temperatureTimer = new QTimer(this);
     initActionsConnections();
 //    QTimer::singleShot(50, m_connectDialog, &ConnectDialog::show);//no need
 }
@@ -40,6 +42,7 @@ void MainWindow::initActionsConnections()
     connect(m_ui->actionQuit, &QAction::triggered, this, &QWidget::close);
     connect(m_ui->actionAboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
     connect(m_ui->actionClearLog, &QAction::triggered, m_ui->receivedMessagesEdit, &QTextEdit::clear);
+    connect(m_temperatureTimer, &QTimer::timeout, this, &MainWindow::adjustTemperatureValue);
 }
 
 void MainWindow::processErrors(QCanBusDevice::CanBusError error) const
@@ -136,6 +139,8 @@ void MainWindow::processFramesWritten(qint64 count)
     m_written->setText(tr("%1 frames written").arg(m_numberFramesWritten));
 }
 
+
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     m_connectDialog->close();
@@ -175,7 +180,11 @@ void MainWindow::processReceivedFrames()
                 int temperature = static_cast< uint8_t >(payload[0]);//qreal
                 setTemperature(temperature);
             }
-
+            if (frameId == HUMIDITY_FRAME_ID && !payload.isEmpty())
+            {
+                int humidity = static_cast< uint8_t >(payload[0]);//qreal
+                setHumidity(humidity);
+            }
             view = frame.toString();
         }
         const QString time = QString::fromLatin1("%1.%2 ")
@@ -189,20 +198,55 @@ void MainWindow::processReceivedFrames()
 
 void MainWindow::setTemperature(const int temperature)
 {
+    int oldTemperature = m_ui->temperatureSpinBox->value();
     int newTemperature = (temperature - 128) < -128 ? -128 : temperature - 128;
     newTemperature = newTemperature > 127 ? 127 : newTemperature;
-    m_ui->temperatureSpinBox->setValue(newTemperature);//QString::number(temperature, 10).toUpper()
+    m_temperatureTargetValue = newTemperature;
+
+    if (qAbs(temperature - (oldTemperature + 128)) >= 30)
+        m_temperatureTimer->start(500);
+    else
+        m_ui->temperatureSpinBox->setValue(newTemperature);//QString::number(temperature, 10).toUpper()
 }
 
-//void MainWindow::sendFrame(const QCanBusFrame &frame) const
-//{
-//    if (!m_canDevice)
-//        return;
-//    m_canDevice->writeFrame(frame);
+void MainWindow::adjustTemperatureValue()
+{
+    if (qAbs((m_ui->temperatureSpinBox->value() + 128) - (m_temperatureTargetValue + 128)) < 30)
+    {
+        m_temperatureTimer->stop();
+        m_ui->temperatureSpinBox->setValue(m_temperatureTargetValue);
+    }
+    else
+    {
+        int oldTemperature = m_ui->temperatureSpinBox->value();
+        int delta = 5;
+        if (m_temperatureTargetValue > oldTemperature)
+        {
+            m_ui->temperatureSpinBox->setValue(oldTemperature + delta);
+        }
+        else
+        {
+            m_ui->temperatureSpinBox->setValue(oldTemperature - delta);
+        }
+    }
+}
 
-////    QCanBusFrame::FrameId frameId = ENGINE_MALFUNCTION_FRAME_ID;
-////    QCanBusFrame frame(frameId, data);//QByteArray &data
-////    if (!m_device->writeFrame(frame)) {
-////    qWarning() << "Failed to send frame";
-////    }
-//}
+void MainWindow::setHumidity(const int humidity)
+{
+    int newHumidity = humidity < 0 ? 0 : humidity;
+    newHumidity = newHumidity > 100 ? 100 : newHumidity;
+    m_ui->humiditySpinBox->setValue(newHumidity);
+}
+
+void MainWindow::sendFrame(const QCanBusFrame &frame) const
+{
+    if (!m_canDevice)
+        return;
+    m_canDevice->writeFrame(frame);
+
+//    QCanBusFrame::FrameId frameId = ENGINE_MALFUNCTION_FRAME_ID;
+//    QCanBusFrame frame(frameId, data);//QByteArray &data
+//    if (!m_device->writeFrame(frame)) {
+//    qWarning() << "Failed to send frame";
+//    }
+}
