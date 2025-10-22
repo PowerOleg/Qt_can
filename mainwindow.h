@@ -31,7 +31,7 @@ private slots:
     void connectDevice();
     void disconnectDevice();
     void processFramesWritten(qint64);
-    void adjustTemperatureValue();//qint8//uint8_t
+    void adjustTemperatureValue();
 
 protected:
     void closeEvent(QCloseEvent *event) override;

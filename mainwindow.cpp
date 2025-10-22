@@ -22,6 +22,8 @@ MainWindow::MainWindow(QWidget *parent) :
     m_temperatureTimer = new QTimer(this);
     initActionsConnections();
 //    QTimer::singleShot(50, m_connectDialog, &ConnectDialog::show);//no need
+
+
 }
 
 MainWindow::~MainWindow()
@@ -34,8 +36,6 @@ MainWindow::~MainWindow()
 void MainWindow::initActionsConnections()
 {
     m_ui->actionDisconnect->setEnabled(false);
-//    m_ui->sendFrameBox->setEnabled(false);
-//    connect(m_ui->sendFrameBox, &SendFrameBox::sendFrame, this, &MainWindow::sendFrame);
     connect(m_ui->actionConnect, &QAction::triggered, m_connectDialog, &ConnectDialog::show);
     connect(m_connectDialog, &QDialog::accepted, this, &MainWindow::connectDevice);
     connect(m_ui->actionDisconnect, &QAction::triggered, this, &MainWindow::disconnectDevice);
@@ -95,7 +95,6 @@ void MainWindow::connectDevice()
     {
         m_ui->actionConnect->setEnabled(false);
         m_ui->actionDisconnect->setEnabled(true);
-//        m_ui->sendFrameBox->setEnabled(true);
         const QVariant bitRate = m_canDevice->configurationParameter(QCanBusDevice::BitRateKey);
         if (bitRate.isValid())
         {
@@ -117,6 +116,11 @@ void MainWindow::connectDevice()
         {
             m_status->setText(tr("Plugin: %1, connected to %2").arg(p.pluginName).arg(p.deviceInterfaceName));
         }
+        const QByteArray payload = QByteArray::fromHex("FF");
+        const QCanBusFrame temperatureInitFrame = QCanBusFrame(TEMPERATURE_FRAME_ID, payload);
+        m_canDevice->writeFrame(temperatureInitFrame);
+        const QCanBusFrame humidityInitFame = QCanBusFrame(HUMIDITY_FRAME_ID, payload);
+        m_canDevice->writeFrame(humidityInitFame);
     }
 }
 
@@ -129,7 +133,6 @@ void MainWindow::disconnectDevice()
     m_canDevice = nullptr;
     m_ui->actionConnect->setEnabled(true);
     m_ui->actionDisconnect->setEnabled(false);
-//    m_ui->sendFrameBox->setEnabled(false);
     m_status->setText(tr("Disconnected"));
 }
 
@@ -138,8 +141,6 @@ void MainWindow::processFramesWritten(qint64 count)
     m_numberFramesWritten += count;
     m_written->setText(tr("%1 frames written").arg(m_numberFramesWritten));
 }
-
-
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
@@ -171,18 +172,16 @@ void MainWindow::processReceivedFrames()
             view = m_canDevice->interpretErrorFrame(frame);
         else
         {
-            auto frameId = frame.frameId();//QCanBusFrame::FrameId
+            auto frameId = frame.frameId();
             QByteArray payload = frame.payload();
-//            qDebug() << "ID: " << QString::number(frameId, 16).toUpper()
-//            << " Data: " << payload.toHex().toUpper();
             if (frameId == TEMPERATURE_FRAME_ID && !payload.isEmpty())
             {
-                int temperature = static_cast< uint8_t >(payload[0]);//qreal
+                int temperature = static_cast< uint8_t >(payload[0]);
                 setTemperature(temperature);
             }
             if (frameId == HUMIDITY_FRAME_ID && !payload.isEmpty())
             {
-                int humidity = static_cast< uint8_t >(payload[0]);//qreal
+                int humidity = static_cast< uint8_t >(payload[0]);
                 setHumidity(humidity);
             }
             view = frame.toString();
@@ -199,19 +198,19 @@ void MainWindow::processReceivedFrames()
 void MainWindow::setTemperature(const int temperature)
 {
     int oldTemperature = m_ui->temperatureSpinBox->value();
-    int newTemperature = (temperature - 128) < -128 ? -128 : temperature - 128;
-    newTemperature = newTemperature > 127 ? 127 : newTemperature;
+    int newTemperature = (temperature - 100) < -100 ? -100 : temperature - 100;
+    newTemperature = newTemperature > 100 ? 100 : newTemperature;
     m_temperatureTargetValue = newTemperature;
 
-    if (qAbs(temperature - (oldTemperature + 128)) >= 30)
+    if (qAbs(temperature - (oldTemperature + 100)) >= 30)
         m_temperatureTimer->start(500);
     else
-        m_ui->temperatureSpinBox->setValue(newTemperature);//QString::number(temperature, 10).toUpper()
+        m_ui->temperatureSpinBox->setValue(newTemperature);
 }
 
 void MainWindow::adjustTemperatureValue()
 {
-    if (qAbs((m_ui->temperatureSpinBox->value() + 128) - (m_temperatureTargetValue + 128)) < 30)
+    if (qAbs((m_ui->temperatureSpinBox->value() + 100) - (m_temperatureTargetValue + 100)) < 30)
     {
         m_temperatureTimer->stop();
         m_ui->temperatureSpinBox->setValue(m_temperatureTargetValue);
@@ -243,10 +242,4 @@ void MainWindow::sendFrame(const QCanBusFrame &frame) const
     if (!m_canDevice)
         return;
     m_canDevice->writeFrame(frame);
-
-//    QCanBusFrame::FrameId frameId = ENGINE_MALFUNCTION_FRAME_ID;
-//    QCanBusFrame frame(frameId, data);//QByteArray &data
-//    if (!m_device->writeFrame(frame)) {
-//    qWarning() << "Failed to send frame";
-//    }
 }
