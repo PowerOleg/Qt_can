@@ -145,7 +145,7 @@
           <item row="2" column="1">
            <widget class="QLabel" name="gradusCurrentLabel">
             <property name="text">
-             <string>градусов</string>
+             <string>°C</string>
             </property>
            </widget>
           </item>
@@ -216,6 +216,18 @@
           </item>
           <item row="3" column="0">
            <widget class="QSpinBox" name="humidityTargetSpinBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>90</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="readOnly">
              <bool>true</bool>
             </property>
@@ -226,6 +238,18 @@
           </item>
           <item row="1" column="0">
            <widget class="QSpinBox" name="temperatureTargetSpinBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>90</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="readOnly">
              <bool>true</bool>
             </property>
@@ -247,7 +271,7 @@
           <item row="1" column="1">
            <widget class="QLabel" name="gradusTargetLabel">
             <property name="text">
-             <string>градусов</string>
+             <string>°C</string>
             </property>
            </widget>
           </item>
