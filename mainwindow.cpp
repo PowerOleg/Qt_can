@@ -177,12 +177,19 @@ void MainWindow::processReceivedFrames()
             if (frameId == TEMPERATURE_FRAME_ID && !payload.isEmpty())
             {
                 int temperature = static_cast< uint8_t >(payload[0]);
-                setTemperature(temperature);
+                if (!isInitSensor(m_ui->temperatureSensorEdit, temperature))
+                {
+                    setTemperature(temperature);
+                }
             }
             if (frameId == HUMIDITY_FRAME_ID && !payload.isEmpty())
             {
                 int humidity = static_cast< uint8_t >(payload[0]);
-                setHumidity(humidity);
+                if (!isInitSensor(m_ui->humiditySentorEdit, humidity))
+                {
+                     setHumidity(humidity);
+                }
+
             }
             view = frame.toString();
         }
@@ -202,6 +209,7 @@ void MainWindow::setTemperature(const int temperature)
     newTemperature = newTemperature > 100 ? 100 : newTemperature;
     m_temperatureTargetValue = newTemperature;
 
+    m_ui->temperatureTargetSpinBox->setValue(newTemperature);
     if (qAbs(temperature - (oldTemperature + 100)) >= 30)
         m_temperatureTimer->start(500);
     else
@@ -234,7 +242,18 @@ void MainWindow::setHumidity(const int humidity)
 {
     int newHumidity = humidity < 0 ? 0 : humidity;
     newHumidity = newHumidity > 100 ? 100 : newHumidity;
+    m_ui->humidityTargetSpinBox->setValue(newHumidity);
     m_ui->humiditySpinBox->setValue(newHumidity);
+}
+
+bool MainWindow::isInitSensor(QLineEdit *&lineEdit, int value)
+{
+    if (value == 255)
+    {
+        lineEdit->setText("Исправен");
+        return true;
+    }
+    return false;
 }
 
 void MainWindow::sendFrame(const QCanBusFrame &frame) const

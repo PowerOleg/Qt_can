@@ -10,6 +10,7 @@
 class ConnectDialog;
 class QCanBusFrame;
 class QLabel;
+class QLineEdit;
 
 namespace Ui
 {
@@ -23,7 +24,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
+    QString m_sensorInitValue = "FF";
 private slots:
     void sendFrame(const QCanBusFrame &frame) const;
     void processReceivedFrames();
@@ -40,6 +41,7 @@ private:
     void initActionsConnections();
     void setTemperature(const int temperature);
     void setHumidity(const int humidity);
+    bool isInitSensor(QLineEdit *&lineEdit, int value);
     qint64 m_numberFramesWritten = 0;
     Ui::MainWindow *m_ui = nullptr;
     QLabel *m_status = nullptr;
