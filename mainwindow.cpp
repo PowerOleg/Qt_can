@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_status->setText("Please set connection");
     m_ui->statusBar->addWidget(m_written);
     m_temperatureTimer = new QTimer(this);
+    m_humidityTimer = new QTimer(this);
     initActionsConnections();
 //    QTimer::singleShot(50, m_connectDialog, &ConnectDialog::show);//no need
 
@@ -43,6 +44,7 @@ void MainWindow::initActionsConnections()
     connect(m_ui->actionAboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
     connect(m_ui->actionClearLog, &QAction::triggered, m_ui->receivedMessagesEdit, &QTextEdit::clear);
     connect(m_temperatureTimer, &QTimer::timeout, this, &MainWindow::adjustTemperatureValue);
+    connect(m_humidityTimer, &QTimer::timeout, this, &MainWindow::adjustHumidityValue);
 }
 
 void MainWindow::processErrors(QCanBusDevice::CanBusError error) const
@@ -218,7 +220,7 @@ void MainWindow::setTemperature(const int temperature)
 
 void MainWindow::adjustTemperatureValue()
 {
-    if (qAbs((m_ui->temperatureSpinBox->value() + 100) - (m_temperatureTargetValue + 100)) < 30)
+    if (qAbs((m_ui->temperatureSpinBox->value() + 100) - (m_temperatureTargetValue + 100)) < 20)
     {
         m_temperatureTimer->stop();
         m_ui->temperatureSpinBox->setValue(m_temperatureTargetValue);
@@ -238,12 +240,40 @@ void MainWindow::adjustTemperatureValue()
     }
 }
 
+void MainWindow::adjustHumidityValue()
+{
+    if (qAbs(m_humidityTargetValue - m_ui->humiditySpinBox->value()) < 20)
+    {
+        m_humidityTimer->stop();
+        m_ui->humiditySpinBox->setValue(m_humidityTargetValue);
+    }
+    else
+    {
+        int oldHumidity = m_ui->humiditySpinBox->value();
+        int delta = 5;
+        if (m_humidityTargetValue > oldHumidity)
+        {
+            m_ui->humiditySpinBox->setValue(oldHumidity + delta);
+        }
+        else
+        {
+            m_ui->humiditySpinBox->setValue(oldHumidity - delta);
+        }
+    }
+}
+
 void MainWindow::setHumidity(const int humidity)
 {
+    int oldHumidity = m_ui->humiditySpinBox->value();
     int newHumidity = humidity < 0 ? 0 : humidity;
     newHumidity = newHumidity > 100 ? 100 : newHumidity;
+    m_humidityTargetValue = newHumidity;
     m_ui->humidityTargetSpinBox->setValue(newHumidity);
-    m_ui->humiditySpinBox->setValue(newHumidity);
+
+    if (qAbs(newHumidity - oldHumidity) >= 20)
+        m_humidityTimer->start(500);
+    else
+        m_ui->humiditySpinBox->setValue(newHumidity);
 }
 
 bool MainWindow::isInitSensor(QLineEdit *&lineEdit, int value)

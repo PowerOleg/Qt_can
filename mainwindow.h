@@ -33,6 +33,7 @@ private slots:
     void disconnectDevice();
     void processFramesWritten(qint64);
     void adjustTemperatureValue();
+    void adjustHumidityValue();
 
 protected:
     void closeEvent(QCloseEvent *event) override;
@@ -49,8 +50,9 @@ private:
     ConnectDialog *m_connectDialog = nullptr;
     QCanBusDevice *m_canDevice = nullptr;
     QTimer* m_temperatureTimer;
+    QTimer* m_humidityTimer;
     int m_temperatureTargetValue = 0;
-
+    int m_humidityTargetValue = 0;
 };
 
 #endif // MAINWINDOW_H
