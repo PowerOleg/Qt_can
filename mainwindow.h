@@ -26,7 +26,8 @@ public:
     ~MainWindow();
     QString m_sensorInitValue = "FF";
 private slots:
-    void sendFrame(const QCanBusFrame &frame) const;
+    //void sendFrame(const QCanBusFrame &frame) const;
+    void sendTemperature(const int temperature) const;
     void processReceivedFrames();
     void processErrors(QCanBusDevice::CanBusError) const;
     void connectDevice();

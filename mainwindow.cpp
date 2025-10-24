@@ -215,7 +215,10 @@ void MainWindow::setTemperature(const int temperature)
     if (qAbs(temperature - (oldTemperature + 100)) >= 30)
         m_temperatureTimer->start(500);
     else
+    {
         m_ui->temperatureSpinBox->setValue(newTemperature);
+        sendTemperature(newTemperature);
+    }
 }
 
 void MainWindow::adjustTemperatureValue()
@@ -232,10 +235,12 @@ void MainWindow::adjustTemperatureValue()
         if (m_temperatureTargetValue > oldTemperature)
         {
             m_ui->temperatureSpinBox->setValue(oldTemperature + delta);
+            //sendTemperature
         }
         else
         {
             m_ui->temperatureSpinBox->setValue(oldTemperature - delta);
+            //newTemperature
         }
     }
 }
@@ -286,9 +291,13 @@ bool MainWindow::isInitSensor(QLineEdit *&lineEdit, int value)
     return false;
 }
 
-void MainWindow::sendFrame(const QCanBusFrame &frame) const
+void MainWindow::sendTemperature(const int temperature) const
 {
     if (!m_canDevice)
         return;
-    m_canDevice->writeFrame(frame);
+    QString temperatureHexValue = QString("%1").arg(temperature + 100, 2, 16, QLatin1Char( '0' ));
+    QByteArray temperatureByteArray = QByteArray::fromStdString(temperatureHexValue.toStdString());
+    const QByteArray payload = QByteArray::fromHex(temperatureByteArray);
+    const QCanBusFrame temperatureFrame = QCanBusFrame(TEMPERATURE_FRAME_ID, payload);
+    m_canDevice->writeFrame(temperatureFrame);
 }
