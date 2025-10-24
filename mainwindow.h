@@ -35,7 +35,7 @@ private slots:
     void processFramesWritten(qint64);
     void adjustTemperatureValue();
     void adjustHumidityValue();
-
+    void timerAddSecond();
 protected:
     void closeEvent(QCloseEvent *event) override;
 
@@ -54,6 +54,10 @@ private:
     QTimer* m_humidityTimer;
     int m_temperatureTargetValue = 0;
     int m_humidityTargetValue = 0;
+
+    QTimer* m_timeTimer;
+    QTime* m_currentTime;
+    int m_temperaturePowCount = 4;
 };
 
 #endif // MAINWINDOW_H

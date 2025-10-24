@@ -7,6 +7,8 @@
 #include <QCloseEvent>
 #include <QDesktopServices>
 #include <QTimer>
+#include <QTime>
+#include <QtCore/qmath.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -21,9 +23,10 @@ MainWindow::MainWindow(QWidget *parent) :
     m_ui->statusBar->addWidget(m_written);
     m_temperatureTimer = new QTimer(this);
     m_humidityTimer = new QTimer(this);
+    m_timeTimer = new QTimer(this);
+    m_currentTime = new QTime(0,0,0,0);
     initActionsConnections();
 //    QTimer::singleShot(50, m_connectDialog, &ConnectDialog::show);//no need
-
 
 }
 
@@ -45,6 +48,7 @@ void MainWindow::initActionsConnections()
     connect(m_ui->actionClearLog, &QAction::triggered, m_ui->receivedMessagesEdit, &QTextEdit::clear);
     connect(m_temperatureTimer, &QTimer::timeout, this, &MainWindow::adjustTemperatureValue);
     connect(m_humidityTimer, &QTimer::timeout, this, &MainWindow::adjustHumidityValue);
+    connect(m_timeTimer, &QTimer::timeout, this, &MainWindow::timerAddSecond);
 }
 
 void MainWindow::processErrors(QCanBusDevice::CanBusError error) const
@@ -123,6 +127,7 @@ void MainWindow::connectDevice()
         m_canDevice->writeFrame(temperatureInitFrame);
         const QCanBusFrame humidityInitFame = QCanBusFrame(HUMIDITY_FRAME_ID, payload);
         m_canDevice->writeFrame(humidityInitFame);
+        m_timeTimer->start(1000);
     }
 }
 
@@ -213,7 +218,7 @@ void MainWindow::setTemperature(const int temperature)
 
     m_ui->temperatureTargetSpinBox->setValue(newTemperature);
     if (qAbs(temperature - (oldTemperature + 100)) >= 30)
-        m_temperatureTimer->start(500);
+        m_temperatureTimer->start(1000);
     else
     {
         m_ui->temperatureSpinBox->setValue(newTemperature);
@@ -223,31 +228,34 @@ void MainWindow::setTemperature(const int temperature)
 
 void MainWindow::adjustTemperatureValue()
 {
-    if (qAbs((m_ui->temperatureSpinBox->value() + 100) - (m_temperatureTargetValue + 100)) < 20)
+    if (qAbs((m_ui->temperatureSpinBox->value() + 100) - (m_temperatureTargetValue + 100)) < 30)
     {
         m_temperatureTimer->stop();
         m_ui->temperatureSpinBox->setValue(m_temperatureTargetValue);
+        m_temperaturePowCount = 4;
+        sendTemperature(m_temperatureTargetValue);
     }
     else
     {
         int oldTemperature = m_ui->temperatureSpinBox->value();
-        int delta = 5;
+        int delta = 2;
+        delta += m_temperaturePowCount <= 20 ? m_temperaturePowCount+=2 : 20;
         if (m_temperatureTargetValue > oldTemperature)
         {
             m_ui->temperatureSpinBox->setValue(oldTemperature + delta);
-            //sendTemperature
+            sendTemperature(oldTemperature + delta);
         }
         else
         {
             m_ui->temperatureSpinBox->setValue(oldTemperature - delta);
-            //newTemperature
+            sendTemperature(oldTemperature - delta);
         }
     }
 }
 
 void MainWindow::adjustHumidityValue()
 {
-    if (qAbs(m_humidityTargetValue - m_ui->humiditySpinBox->value()) < 20)
+    if (qAbs(m_humidityTargetValue - m_ui->humiditySpinBox->value()) < 30)
     {
         m_humidityTimer->stop();
         m_ui->humiditySpinBox->setValue(m_humidityTargetValue);
@@ -258,13 +266,18 @@ void MainWindow::adjustHumidityValue()
         int delta = 5;
         if (m_humidityTargetValue > oldHumidity)
         {
-            m_ui->humiditySpinBox->setValue(oldHumidity + delta);
+            m_ui->humiditySpinBox->setValue(oldHumidity + 5);
         }
         else
         {
-            m_ui->humiditySpinBox->setValue(oldHumidity - delta);
+            m_ui->humiditySpinBox->setValue(oldHumidity - 5);
         }
     }
+}
+
+void MainWindow::timerAddSecond()
+{
+    *m_currentTime = m_currentTime->addSecs(1);//MSecs(1000);
 }
 
 void MainWindow::setHumidity(const int humidity)
@@ -275,8 +288,8 @@ void MainWindow::setHumidity(const int humidity)
     m_humidityTargetValue = newHumidity;
     m_ui->humidityTargetSpinBox->setValue(newHumidity);
 
-    if (qAbs(newHumidity - oldHumidity) >= 20)
-        m_humidityTimer->start(500);
+    if (qAbs(newHumidity - oldHumidity) >= 30)
+        m_humidityTimer->start(1000);
     else
         m_ui->humiditySpinBox->setValue(newHumidity);
 }
@@ -294,9 +307,17 @@ bool MainWindow::isInitSensor(QLineEdit *&lineEdit, int value)
 void MainWindow::sendTemperature(const int temperature) const
 {
     if (!m_canDevice)
-        return;
-    QString temperatureHexValue = QString("%1").arg(temperature + 100, 2, 16, QLatin1Char( '0' ));
-    QByteArray temperatureByteArray = QByteArray::fromStdString(temperatureHexValue.toStdString());
+        return;    
+    QString temperatureTimeHexValue = QString("%1").arg(temperature + 100, 2, 16, QLatin1Char( '0' ));
+    int sec = m_currentTime->second();
+    int min = m_currentTime->minute();
+    int hour = m_currentTime->hour();
+    QString secHexValue = QString("%1").arg(sec, 2, 16, QLatin1Char( '0' ));
+    QString minHexValue = QString("%1").arg(min, 2, 16, QLatin1Char( '0' ));
+    QString hourHexValue = QString("%1").arg(hour, 2, 16, QLatin1Char( '0' ));
+    temperatureTimeHexValue.append(secHexValue).append(minHexValue).append(hourHexValue);
+
+    QByteArray temperatureByteArray = QByteArray::fromStdString(temperatureTimeHexValue.toStdString());
     const QByteArray payload = QByteArray::fromHex(temperatureByteArray);
     const QCanBusFrame temperatureFrame = QCanBusFrame(TEMPERATURE_FRAME_ID, payload);
     m_canDevice->writeFrame(temperatureFrame);
