@@ -194,12 +194,15 @@ void MainWindow::processReceivedFrames()
 void MainWindow::setTemperature(const uint8_t temperature)
 {
     int8_t oldTemperature = m_ui->temperatureSpinBox->value();
-    int8_t newTemperature = (temperature - 100) < -100 ? -100 : temperature - 100;
-    newTemperature = newTemperature > 100 ? 100 : newTemperature;
+    int8_t minusHandred = -100;
+    int8_t handred = 100;
+
+    int8_t newTemperature = (temperature - handred) < minusHandred ? minusHandred : temperature - handred;//251025
+    newTemperature = newTemperature > handred ? handred : newTemperature;
     m_temperatureTargetValue = newTemperature;
 
     m_ui->temperatureTargetSpinBox->setValue(newTemperature);
-    if (qAbs(temperature - (oldTemperature + 100)) >= m_startInertion)
+    if (qAbs(temperature - (oldTemperature + handred)) >= m_startInertion)
         m_temperatureTimer->start(1000);
     else
     {
@@ -221,7 +224,9 @@ void MainWindow::adjustTemperatureValue()
     {
         int8_t oldTemperature = m_ui->temperatureSpinBox->value();
         uint8_t delta = 2;
-        delta += m_temperaturePowCount <= 20 ? m_temperaturePowCount+=2 : 20;
+        uint8_t two = 2;
+        uint8_t twenty = 20;
+        delta += m_temperaturePowCount <= twenty ? m_temperaturePowCount += two : twenty;
         if (m_temperatureTargetValue > oldTemperature)
         {
             m_ui->temperatureSpinBox->setValue(oldTemperature + delta);
@@ -265,8 +270,10 @@ void MainWindow::timerAddSecond()
 void MainWindow::setHumidity(const uint8_t humidity)
 {
     uint8_t oldHumidity = m_ui->humiditySpinBox->value();
-    uint8_t newHumidity = humidity < 0 ? 0 : humidity;
-    newHumidity = newHumidity > 100 ? 100 : newHumidity;
+    uint8_t zero = 0;
+    uint8_t hundred = 100;
+    uint8_t newHumidity = humidity < zero ? zero : humidity;
+    newHumidity = newHumidity > hundred ? hundred : newHumidity;
     m_humidityTargetValue = newHumidity;
     m_ui->humidityTargetSpinBox->setValue(newHumidity);
 
@@ -276,9 +283,10 @@ void MainWindow::setHumidity(const uint8_t humidity)
         m_ui->humiditySpinBox->setValue(newHumidity);
 }
 
-bool MainWindow::isInitSensor(QLineEdit *&lineEdit, int value)
+bool MainWindow::isInitSensor(QLineEdit *&lineEdit, uint8_t value)
 {
-    if (value == 255)
+    uint8_t ff = 255;
+    if (value == ff)
     {
         lineEdit->setText("Исправен");
         return true;
@@ -291,8 +299,8 @@ void MainWindow::sendTemperature(const int8_t temperature) const
     if (!m_canDevice)
         return;    
     QString temperatureTimeHexValue = QString("%1").arg(temperature + 100, 2, 16, QLatin1Char( '0' ));
-    uint32_t sec = m_currentTime->second();
-    uint32_t min = m_currentTime->minute();
+    uint8_t sec = m_currentTime->second();
+    uint8_t min = m_currentTime->minute();
     uint32_t hour = m_currentTime->hour();
     QString secHexValue = QString("%1").arg(sec, 2, 16, QLatin1Char( '0' ));
     QString minHexValue = QString("%1").arg(min, 2, 16, QLatin1Char( '0' ));

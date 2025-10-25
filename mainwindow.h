@@ -40,7 +40,7 @@ private:
     void initActionsConnections();
     void setTemperature(const uint8_t temperature);
     void setHumidity(const uint8_t humidity);
-    bool isInitSensor(QLineEdit *&lineEdit, int value);
+    bool isInitSensor(QLineEdit *&lineEdit, uint8_t value);
     uint32_t m_numberFramesWritten = 0;
     Ui::MainWindow *m_ui = nullptr;
     QLabel *m_status = nullptr;
@@ -54,7 +54,7 @@ private:
     QTimer* m_humidityTimer = nullptr;
     QTimer* m_timeTimer = nullptr;
     QTime* m_currentTime = nullptr;
-    const uint8_t m_startInertion = 30;
+    const int m_startInertion = 30;
 };
 
 #endif // MAINWINDOW_H
