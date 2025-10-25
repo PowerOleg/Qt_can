@@ -5,7 +5,6 @@
 #define HUMIDITY_FRAME_ID 0x50
 #include <QMainWindow>
 #include <QCanBusDevice>
-#include "sendframebox.h"
 
 class ConnectDialog;
 class QCanBusFrame;
@@ -25,39 +24,37 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     QString m_sensorInitValue = "FF";
+
 private slots:
-    //void sendFrame(const QCanBusFrame &frame) const;
-    void sendTemperature(const int temperature) const;
+    void sendTemperature(const int8_t temperature) const;
     void processReceivedFrames();
-    void processErrors(QCanBusDevice::CanBusError) const;
     void connectDevice();
     void disconnectDevice();
-    void processFramesWritten(qint64);
+    void processFramesWritten(uint32_t);
     void adjustTemperatureValue();
     void adjustHumidityValue();
     void timerAddSecond();
 protected:
     void closeEvent(QCloseEvent *event) override;
-
 private:
     void initActionsConnections();
-    void setTemperature(const int temperature);
-    void setHumidity(const int humidity);
+    void setTemperature(const uint8_t temperature);
+    void setHumidity(const uint8_t humidity);
     bool isInitSensor(QLineEdit *&lineEdit, int value);
-    qint64 m_numberFramesWritten = 0;
+    uint32_t m_numberFramesWritten = 0;
     Ui::MainWindow *m_ui = nullptr;
     QLabel *m_status = nullptr;
     QLabel *m_written = nullptr;
     ConnectDialog *m_connectDialog = nullptr;
     QCanBusDevice *m_canDevice = nullptr;
-    QTimer* m_temperatureTimer;
-    QTimer* m_humidityTimer;
-    int m_temperatureTargetValue = 0;
-    int m_humidityTargetValue = 0;
-
-    QTimer* m_timeTimer;
-    QTime* m_currentTime;
-    int m_temperaturePowCount = 4;
+    int8_t m_temperatureTargetValue = 0;
+    uint8_t m_temperaturePowCount = 4;
+    QTimer* m_temperatureTimer = nullptr;
+    uint8_t m_humidityTargetValue = 0;
+    QTimer* m_humidityTimer = nullptr;
+    QTimer* m_timeTimer = nullptr;
+    QTime* m_currentTime = nullptr;
+    const uint8_t m_startInertion = 30;
 };
 
 #endif // MAINWINDOW_H

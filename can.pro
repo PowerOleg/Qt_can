@@ -27,24 +27,19 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    cancontroller.cpp \
-    connectdialog.cpp \
-    bitratebox.cpp \
-    sendframebox.cpp
+        connectdialog.cpp \
+        bitratebox.cpp
 
 
 HEADERS += \
         mainwindow.h \
-    cancontroller.h \
-    connectdialog.h \
-    bitratebox.h \
-    sendframebox.h
+        connectdialog.h \
+        bitratebox.h
 
 
 FORMS += \
         mainwindow.ui \
-    connectdialog.ui \
-    sendframebox.ui
+        connectdialog.ui
 
 RESOURCES += \
     resource.qrc
