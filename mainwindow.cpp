@@ -31,6 +31,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    delete m_status;
+    delete m_written;
+    delete m_currentTime;
     delete m_canDevice;
     delete m_connectDialog;
     delete m_ui;
