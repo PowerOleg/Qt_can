@@ -26,7 +26,6 @@ MainWindow::MainWindow(QWidget *parent) :
     m_timeTimer = new QTimer(this);
     m_currentTime = new QTime(0,0,0,0);
     initActionsConnections();
-//    QTimer::singleShot(50, m_connectDialog, &ConnectDialog::show);//no need
 }
 
 MainWindow::~MainWindow()
@@ -200,7 +199,7 @@ void MainWindow::setTemperature(const uint8_t temperature)
     int8_t minusHandred = -100;
     int8_t handred = 100;
 
-    int8_t newTemperature = (temperature - handred) < minusHandred ? minusHandred : temperature - handred;//251025
+    int8_t newTemperature = (temperature - handred) < minusHandred ? minusHandred : temperature - handred;
     newTemperature = newTemperature > handred ? handred : newTemperature;
     m_temperatureTargetValue = newTemperature;
 
@@ -310,8 +309,7 @@ void MainWindow::sendTemperature(const int8_t temperature) const
     QString hourHexValue = QString("%1").arg(hour, 2, 16, QLatin1Char( '0' ));
     temperatureTimeHexValue.append(secHexValue).append(minHexValue).append(hourHexValue);
 
-    QByteArray temperatureByteArray = QByteArray::fromStdString(temperatureTimeHexValue.toStdString());//251025
-    const QByteArray payload = QByteArray::fromHex(temperatureByteArray);
+    const QByteArray payload = QByteArray::fromHex(QByteArray::fromStdString(temperatureTimeHexValue.toStdString()));
     const QCanBusFrame temperatureFrame = QCanBusFrame(TEMPERATURE_FRAME_ID, payload);
     m_canDevice->writeFrame(temperatureFrame);
 }
